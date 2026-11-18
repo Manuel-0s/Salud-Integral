@@ -23,5 +23,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "HealthTrack"
+rootProject.name = "Salud Integral"
 include(":app")

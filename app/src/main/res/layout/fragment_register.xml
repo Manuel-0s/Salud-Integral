@@ -23,7 +23,7 @@
         <ImageView
             android:layout_width="80dp"
             android:layout_height="80dp"
-            app:srcCompat="@drawable/ic_splash_logo" />
+            app:srcCompat="@drawable/ic_logo" />
 
         <TextView
             android:layout_width="wrap_content"

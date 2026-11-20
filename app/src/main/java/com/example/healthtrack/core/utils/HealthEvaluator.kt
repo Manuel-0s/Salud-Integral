@@ -1,6 +1,13 @@
 package com.example.healthtrack.core.utils
 
+import com.example.healthtrack.domain.model.AlertLevel
+
 object HealthEvaluator {
+
+    private const val DEFAULT_MAX_GLUCOSE = 140
+    private const val DEFAULT_MAX_HEART_RATE = 100
+    private const val DEFAULT_MAX_SYSTOLIC = 130
+    private const val DEFAULT_MAX_DIASTOLIC = 85
 
     fun getGlucoseStatus(value: Double): String = when {
         value < 70 -> "Baja — Tus niveles de azúcar están por debajo del rango recomendado. Intenta consumir un carbohidrato de rápida acción."
@@ -27,5 +34,38 @@ object HealthEvaluator {
         value < 25.0 -> "Normal — ¡Felicidades! Tienes una relación excelente entre tu peso y tu estatura. Mantén la consistencia."
         value < 30.0 -> "Sobrepeso — Tu peso está ligeramente por encima de lo ideal. Estás a tiempo de realizar pequeños ajustes en tu rutina."
         else -> "Obesidad — Rango de peso elevado que incrementa el esfuerzo de tu cuerpo. Enfócate en metas de salud graduales y seguras."
+    }
+
+    fun evaluateGlucose(value: Double, maxGlucose: Int? = null): AlertLevel {
+        val threshold = if (maxGlucose != null && maxGlucose > 0) maxGlucose.toDouble() else DEFAULT_MAX_GLUCOSE.toDouble()
+        return when {
+            value < 54.0 || value > 300.0 -> AlertLevel.CRITICAL
+            value < 70.0 || value > threshold -> AlertLevel.WARNING
+            else -> AlertLevel.NONE
+        }
+    }
+
+    fun evaluateHeartRate(value: Double, maxHeartRate: Int? = null): AlertLevel {
+        val threshold = if (maxHeartRate != null && maxHeartRate > 0) maxHeartRate.toDouble() else DEFAULT_MAX_HEART_RATE.toDouble()
+        return when {
+            value < 40.0 || value > 130.0 -> AlertLevel.CRITICAL
+            value < 60.0 || value > threshold -> AlertLevel.WARNING
+            else -> AlertLevel.NONE
+        }
+    }
+
+    fun evaluatePressure(
+        systolic: Int,
+        diastolic: Int,
+        maxSystolic: Int? = null,
+        maxDiastolic: Int? = null
+    ): AlertLevel {
+        val sysThreshold = if (maxSystolic != null && maxSystolic > 0) maxSystolic else DEFAULT_MAX_SYSTOLIC
+        val diaThreshold = if (maxDiastolic != null && maxDiastolic > 0) maxDiastolic else DEFAULT_MAX_DIASTOLIC
+        return when {
+            systolic >= 180 || diastolic >= 120 || systolic < 70 || diastolic < 40 -> AlertLevel.CRITICAL
+            systolic > sysThreshold || diastolic > diaThreshold -> AlertLevel.WARNING
+            else -> AlertLevel.NONE
+        }
     }
 }

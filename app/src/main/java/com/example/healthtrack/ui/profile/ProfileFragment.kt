@@ -41,12 +41,22 @@ class ProfileFragment : Fragment() {
     private fun setupViewModelObservers() {
         viewModel.userData.observe(viewLifecycleOwner) { user ->
             user?.let {
-                binding.tvUserName.text = it.nombre
-                binding.tvUserEmail.text = it.correo
+                binding.tvUserName.text = it.nombre.ifEmpty { "Sin nombre" }
+                binding.tvUserEmail.text = it.correo.ifEmpty { "Sin correo" }
 
                 binding.tvUserBirthDate.text = it.fechaNacimiento.ifEmpty { "No asignada" }
-                binding.tvUserHeight.text = "${it.height} cm"
-                binding.tvUserWeight.text = "${it.weight} kg"
+                
+                binding.tvUserHeight.text = if (it.height > 0) {
+                    if (it.height % 1.0 == 0.0) "${it.height.toInt()} cm" else "${it.height} cm"
+                } else {
+                    "No asignada"
+                }
+
+                binding.tvUserWeight.text = if (it.weight > 0) {
+                    if (it.weight % 1.0 == 0.0) "${it.weight.toInt()} kg" else "${it.weight} kg"
+                } else {
+                    "No asignado"
+                }
             }
         }
 
@@ -73,7 +83,7 @@ class ProfileFragment : Fragment() {
             showEditDialog(
                 title = "Modificar Nombre",
                 hint = "Nombre completo",
-                currentValue = binding.tvUserName.text.toString(),
+                currentValue = binding.tvUserName.text.toString().replace("Sin nombre", ""),
                 inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PERSON_NAME
             ) { nuevoNombre ->
                 binding.tvUserName.text = nuevoNombre
@@ -84,7 +94,7 @@ class ProfileFragment : Fragment() {
             showEditDialog(
                 title = "Modificar Correo",
                 hint = "Dirección de correo",
-                currentValue = binding.tvUserEmail.text.toString(),
+                currentValue = binding.tvUserEmail.text.toString().replace("Sin correo", ""),
                 inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             ) { nuevoEmail ->
                 binding.tvUserEmail.text = nuevoEmail
@@ -96,7 +106,7 @@ class ProfileFragment : Fragment() {
             showEditDialog(
                 title = "Modificar Fecha",
                 hint = "Fecha de nacimiento",
-                currentValue = binding.tvUserBirthDate.text.toString(),
+                currentValue = binding.tvUserBirthDate.text.toString().replace("No asignada", ""),
                 inputType = InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_DATE
             ) { nuevaFecha ->
                 binding.tvUserBirthDate.text = nuevaFecha
@@ -105,28 +115,30 @@ class ProfileFragment : Fragment() {
         }
 
         binding.btnEditHeight.setOnClickListener {
-            val cleanHeight = binding.tvUserHeight.text.toString().replace(" cm", "")
+            val cleanHeight = binding.tvUserHeight.text.toString().replace(" cm", "").replace("No asignada", "")
             showEditDialog(
                 title = "Modificar Estatura",
                 hint = "Estatura (cm)",
                 currentValue = cleanHeight,
                 inputType = InputType.TYPE_CLASS_NUMBER
             ) { nuevaEstatura ->
-                binding.tvUserHeight.text = "$nuevaEstatura cm"
-                viewModel.updateHeight(nuevaEstatura.toIntOrNull() ?: 0)
+                val heightVal = nuevaEstatura.toDoubleOrNull()?.toInt() ?: nuevaEstatura.toIntOrNull() ?: 0
+                binding.tvUserHeight.text = "$heightVal cm"
+                viewModel.updateHeight(heightVal)
             }
         }
 
         binding.btnEditWeight.setOnClickListener {
-            val cleanWeight = binding.tvUserWeight.text.toString().replace(" kg", "")
+            val cleanWeight = binding.tvUserWeight.text.toString().replace(" kg", "").replace("No asignado", "")
             showEditDialog(
                 title = "Modificar Peso",
                 hint = "Peso (kg)",
                 currentValue = cleanWeight,
                 inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             ) { nuevoPeso ->
-                binding.tvUserWeight.text = "$nuevoPeso kg"
-                viewModel.updateWeight(nuevoPeso.toDoubleOrNull() ?: 0.0)
+                val weightVal = nuevoPeso.toDoubleOrNull() ?: 0.0
+                binding.tvUserWeight.text = "$weightVal kg"
+                viewModel.updateWeight(weightVal)
             }
         }
 

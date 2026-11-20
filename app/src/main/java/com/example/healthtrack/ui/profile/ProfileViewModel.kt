@@ -28,14 +28,24 @@ class ProfileViewModel : ViewModel() {
     private val _message = MutableLiveData<String>()
     val message: LiveData<String> get() = _message
 
-    fun loadUserData() {
-        if (_userData.value != null) return
-        
+    fun loadUserData(forceRefresh: Boolean = false) {
+        if (!forceRefresh && _userData.value != null) return
+
         viewModelScope.launch {
             _isLoading.value = true
-            val user = getUserDataUseCase()
-            _userData.value = user
-            _isLoading.value = false
+            try {
+                val user = getUserDataUseCase()
+                if (user != null) {
+                    _userData.value = user
+                } else {
+                    _message.value = "No se pudieron obtener los datos del usuario"
+                }
+            } catch (e: Exception) {
+                _message.value = "Error al cargar perfil: ${e.message}"
+                e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
@@ -48,17 +58,17 @@ class ProfileViewModel : ViewModel() {
             _isLoading.value = true
             try {
                 repository.updateAuthEmail(correo)
-                
+
                 val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
                 repository.updateStats(uid, mapOf("correo" to correo))
-                
+
                 _userData.value?.let {
                     _userData.value = it.copy(correo = correo)
                 }
                 _message.value = "Se ha enviado un correo de verificación a la nueva dirección"
             } catch (e: Exception) {
                 val errorMsg = when (e) {
-                    is com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException -> 
+                    is com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException ->
                         "Por seguridad, debes cerrar sesión e iniciarla de nuevo para cambiar tu correo."
                     else -> "Error al actualizar correo: ${e.message}"
                 }

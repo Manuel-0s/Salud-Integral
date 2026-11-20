@@ -77,6 +77,17 @@ class AddMetricBottomSheet : BottomSheetDialogFragment() {
                     binding.progressBar.visibility = View.GONE
                     binding.btnSave.isEnabled = true
 
+                    com.example.healthtrack.core.notification.ReminderPreferences.markMeasurementRecordedToday(requireContext())
+
+                    if (result.alertLevel != com.example.healthtrack.domain.model.AlertLevel.NONE) {
+                        com.example.healthtrack.core.notification.DiagnosticNotificationHelper.showDiagnosticAlert(
+                            context = requireContext(),
+                            title = result.diagnosticTitle,
+                            message = result.diagnosticMessage,
+                            alertLevel = result.alertLevel
+                        )
+                    }
+
                     Toast.makeText(requireContext(), getString(R.string.measurement_saved), Toast.LENGTH_SHORT).show()
                     viewModelHome.refresh()
                     showSelectionMenu()

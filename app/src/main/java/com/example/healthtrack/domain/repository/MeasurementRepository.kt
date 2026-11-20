@@ -9,4 +9,5 @@ interface MeasurementRepository {
     suspend fun saveMeasurement(measurement: Measurement): SaveMetricResult
     suspend fun getLatestMeasurement(userId: String, metricType: MetricsField): Measurement?
     suspend fun getRecentMeasurements(userId: String, limit: Long): List<Measurement>
+
 }

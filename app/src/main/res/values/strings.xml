@@ -16,4 +16,7 @@
     <string name="notification_channel_desc">Notificaciones para recordar el registro diario de mediciones de salud</string>
     <string name="notification_reminder_title">Recordatorio de Salud</string>
     <string name="notification_reminder_body">No has registrado tus mediciones el día de hoy. ¡Ingresa tus datos para llevar un control de tu salud!</string>
+
+    <string name="diagnostic_channel_name">Alertas de Diagnóstico</string>
+    <string name="diagnostic_channel_desc">Notificaciones inmediatas cuando tus mediciones están fuera de rango</string>
 </resources>

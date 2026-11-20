@@ -19,7 +19,7 @@ class DashboardViewModel : ViewModel() {
     private val repository = MeasurementRepositoryImpl()
     private val authRepository = AuthRepositoryImpl()
     private val userRepository = UserRepositoryImpl()
-    private val saveMeasurementUseCase = SaveMeasurementUseCase(repository, authRepository)
+    private val saveMeasurementUseCase = SaveMeasurementUseCase(repository, authRepository, userRepository)
     private val getUserDataUseCase = GetUserDataUseCase(userRepository)
     private val logoutUseCase = LogoutUseCase(userRepository)
 

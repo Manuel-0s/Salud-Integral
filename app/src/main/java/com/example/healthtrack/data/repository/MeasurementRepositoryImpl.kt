@@ -26,7 +26,7 @@ class MeasurementRepositoryImpl(
                 .add(measurement)
                 .await()
 
-            SaveMetricResult.Success
+            SaveMetricResult.Success()
         } catch (e: Exception) {
             SaveMetricResult.Error(e.message ?: "Error al guardar la medición en Firestore")
         }
